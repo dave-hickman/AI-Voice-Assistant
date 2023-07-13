@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import Button from "./Components/Button";
+import getAssistant from "./utils";
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -10,15 +11,28 @@ mic.interimResults = true;
 
 function App() {
   const [isListening, setIsListening] = useState(false);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(null);
+  const [request, setRequest] = useState({
+    model: "gpt-3.5-turbo",
+  messages: [],
+  temperature: 1,
+  max_tokens: 256,
+  top_p: 1,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+  })
 
   useEffect(() => {
     handleListen();
+    if(note && !isListening){
+      setRequest((prevRequest) => prevRequest.messages.push({"role": "user", "content": `${note}`}))
+      getAssistant(request)
+    }
   }, [isListening]);
 
   const handleListen = () => {
     if (isListening) {
-      setNote("");
+      setNote(null);
       mic.start();
     } else {
       mic.stop();
