@@ -44,7 +44,7 @@ function App() {
     };
   };
 
-  if (!SpeechRecognition){
+  if (!window.speechRecognition && !window.webkitSpeechRecognition){
     return(
       <main className="flex w-full min-h-screen flex-col items-center bg-slate-900">
       <header className="fixed top-6">
@@ -58,7 +58,7 @@ function App() {
       </div>
     </main>
     )
-  }
+  } else{
 
   return (
     <main className="flex w-full min-h-screen flex-col items-center bg-slate-900">
@@ -73,6 +73,6 @@ function App() {
       </div>
     </main>
   );
-}
+}}
 
 export default App;
