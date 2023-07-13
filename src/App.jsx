@@ -4,8 +4,8 @@ import Button from "./Components/Button";
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
+  const isSpeechRecognitionAvailable = !!SpeechRecognition
 const mic = new SpeechRecognition();
-
 mic.continuous = true;
 mic.interimResults = true;
 
@@ -44,7 +44,7 @@ function App() {
     };
   };
 
-  if (!window.speechRecognition && !window.webkitSpeechRecognition){
+  if (!isSpeechRecognitionAvailable){
     return(
       <main className="flex w-full min-h-screen flex-col items-center bg-slate-900">
       <header className="fixed top-6">
