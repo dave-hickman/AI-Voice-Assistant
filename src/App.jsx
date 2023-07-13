@@ -45,10 +45,10 @@ function App() {
   };
 
   return (
-    <main className="flex w-full min-h-screen flex-col items-center bg-slate-700 overflow-scroll">
+    <main className="flex w-full min-h-screen flex-col items-center bg-slate-900">
       <header className="fixed top-6">
-        <h1 className="text-3xl font-bold  text-slate-50">
-          Voice Assistant GPT
+        <h1 className="text-3xl text-slate-50 font-bold font-RocGrotesk">
+          AI VOICE ASSISTANT
         </h1>
       </header>
       <Button isListening={isListening} setIsListening={setIsListening} />
