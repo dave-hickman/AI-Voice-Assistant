@@ -44,6 +44,22 @@ function App() {
     };
   };
 
+  if (!SpeechRecognition){
+    return(
+      <main className="flex w-full min-h-screen flex-col items-center bg-slate-900">
+      <header className="fixed top-6">
+        <h1 className="text-3xl text-slate-50 font-bold font-RocGrotesk">
+          AI VOICE ASSISTANT
+        </h1>
+      </header>
+      <button className="rounded-full bg-teal-100 w-60 h-60 text-slate-700 text-lg z-10 font-RocGrotesk font-medium">Allow Microphone Access</button>
+      <div className="text-slate-50 text-sm opacity-50 fixed top-3/4 w-80 h-36 text-elipsis m-h-3">
+      <p className="h-full overflow-scroll">{note}</p>
+      </div>
+    </main>
+    )
+  }
+
   return (
     <main className="flex w-full min-h-screen flex-col items-center bg-slate-900">
       <header className="fixed top-6">
