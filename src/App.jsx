@@ -19,6 +19,7 @@ function App() {
 
   const handleListen = () => {
     if (isListening) {
+      setNote('')
       mic.start();
       }
     else {
@@ -44,11 +45,12 @@ function App() {
   };
 
   return (
-    <>
-      <h1>Hello</h1>
+    <main className="flex w-full min-h-screen flex-col items-center justify-center bg-slate-700">
+      <h1 className="text-3xl font-bold fixed top-6 text-slate-50">Voice Assistant GPT</h1>
       <Button isListening={isListening} setIsListening={setIsListening} />
+      <p className="text-slate-50 text-lg">{note}</p>
       <p>{note}</p>
-    </>
+    </main>
   );
 }
 
