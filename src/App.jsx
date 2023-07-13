@@ -14,15 +14,14 @@ function App() {
   const [note, setNote] = useState("");
 
   useEffect(() => {
-    handleListen()
+    handleListen();
   }, [isListening]);
 
   const handleListen = () => {
     if (isListening) {
-      setNote('')
+      setNote("");
       mic.start();
-      }
-    else {
+    } else {
       mic.stop();
       mic.onend = () => {
         console.log("Stopped mic on click");
@@ -34,10 +33,11 @@ function App() {
 
     mic.onresult = (e) => {
       const transcript = Array.from(e.results)
-        .map(result => result[0]).map(result => result.transcript)
+        .map((result) => result[0])
+        .map((result) => result.transcript)
         .join("");
       console.log(transcript);
-      setNote(transcript)
+      setNote(transcript);
       mic.onerror = (e) => {
         console.log(e.error);
       };
@@ -45,11 +45,16 @@ function App() {
   };
 
   return (
-    <main className="flex w-full min-h-screen flex-col items-center justify-center bg-slate-700">
-      <h1 className="text-3xl font-bold fixed top-6 text-slate-50">Voice Assistant GPT</h1>
+    <main className="flex w-full min-h-screen flex-col items-center bg-slate-700 overflow-scroll">
+      <header className="fixed top-6">
+        <h1 className="text-3xl font-bold  text-slate-50">
+          Voice Assistant GPT
+        </h1>
+      </header>
       <Button isListening={isListening} setIsListening={setIsListening} />
-      <p className="text-slate-50 text-lg">{note}</p>
-      <p>{note}</p>
+      <div className="text-slate-50 text-sm opacity-50 fixed top-3/4 w-80 h-36 text-elipsis m-h-3">
+      <p className="h-full overflow-scroll">{note}</p>
+      </div>
     </main>
   );
 }
