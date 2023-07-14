@@ -24,10 +24,6 @@ function App() {
 
   useEffect(() => {
     handleListen();
-    if(note && !isListening){
-      setRequest((prevRequest) => prevRequest.messages.push({"role": "user", "content": `${note}`}))
-      getAssistant(request)
-    }
   }, [isListening]);
 
   const handleListen = () => {
