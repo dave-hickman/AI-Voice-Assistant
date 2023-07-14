@@ -13,32 +13,46 @@ mic.interimResults = true;
 function App() {
   const [isListening, setIsListening] = useState(false);
   const [note, setNote] = useState(null);
-  const [gptResponse, setGptResponse] = useState(null)
+  const [gptResponse, setGptResponse] = useState(null);
   const [request, setRequest] = useState({
     model: "gpt-3.5-turbo",
-  messages: [],
-  temperature: 1,
-  max_tokens: 256,
-  top_p: 1,
-  frequency_penalty: 0,
-  presence_penalty: 0,
-  })
+    messages: [],
+    temperature: 1,
+    max_tokens: 256,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+  });
 
   useEffect(() => {
     handleListen();
-    if(note && !isListening){
+    if (note && !isListening) {
+      console.log("im here now");
       setRequest((prevRequest) => {
-        if (!gptResponse){
-          prevRequest.messages.push({"role": "user", "content": {note}})}
-        else {
-          prevRequest.messages.push({gptResponse}, {"role": "user", "content": {note}})
-        }})
+        const updatedRequest = {
+          ...prevRequest,
+          messages: [...prevRequest.messages],
+        };
+        if (!gptResponse) {
+          console.log("setting the message");
+          updatedRequest.messages.push({ role: "user", content: { note } });
+        } else {
+          updatedRequest.messages.push(
+            { gptResponse },
+            { role: "user", content: { note } }
+          );
+        }
+        return updatedRequest;
+      });
       const apiInteraction = async () => {
-        const aiResponse = await sendRequest(request)
-      setGptResponse(aiResponse)
-      console.log(aiResponse)
-      }
-      apiInteraction()
+        console.log("sending to ai");
+        console.log(request);
+        const aiResponse = await sendRequest(request);
+        console.log("now im here");
+        setGptResponse(aiResponse);
+        console.log(aiResponse);
+      };
+      apiInteraction();
     }
   }, [isListening]);
 
@@ -78,7 +92,7 @@ function App() {
       </header>
       <Button isListening={isListening} setIsListening={setIsListening} />
       <div className="text-slate-50 text-sm sm:text-base opacity-50 fixed top-2/3 lg:top-2/3 w-80 sm:w-2/3 h-40 text-elipsis m-h-3 overflow-hidden">
-      <p className="h-full pr-1 pb-1">{note}</p>
+        <p className="h-full pr-1 pb-1">{note}</p>
       </div>
     </main>
   );

@@ -5,8 +5,15 @@ const api = axios.create({
 })
 
 const sendRequest = async (query) => {
-    const {data} = await api.post('/api/content/', query)
+    console.log('in the util now')
+    try{
+    const data = await api.post('/api/content/', query)
+    console.log(data)
     return data
+    } catch(error){
+        console.log(error);
+        return error
+    }
 }
 
 export default sendRequest
