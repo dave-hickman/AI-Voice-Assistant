@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import Button from "./Components/Button";
 import getAssistant from "./utils";
@@ -10,10 +10,14 @@ const mic = new SpeechRecognition();
 mic.continuous = true;
 mic.interimResults = true;
 
+const synth = window.speechSynthesis;
+
 function App() {
   const [isListening, setIsListening] = useState(false);
   const [note, setNote] = useState(null);
   const [gptResponse, setGptResponse] = useState(null);
+  const [voices, setVoices] = useState([])
+  const [isSpeaking, setIsSpeaking] = useState([])
   const [request, setRequest] = useState({
     model: "gpt-3.5-turbo",
     messages: [],
@@ -24,7 +28,37 @@ function App() {
     presence_penalty: 0,
   });
 
+  const spokenRef = useRef(false)
+
+  const textToSpeech = (text) => {
+    console.log('in the text to speech place')
+    const utterance = new SpeechSynthesisUtterance(text);
+    const desiredVoiceName = "Google US English";
+    const desiredVoice = voices.find(
+      (voice) => voice.name === desiredVoiceName
+    );
+
+    if (desiredVoice) {
+      console.log('in here now')
+      utterance.voice = desiredVoice;
+      setIsSpeaking(true);
+      utterance.onend = () => {
+        setIsSpeaking(false)
+      }
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.error("Desired voice not found:", desiredVoiceName);
+      return;
+    }
+  };
+
   useEffect(() => {
+    setVoices(synth.getVoices())
+  }, [])
+
+
+  useEffect(() => {
+    
     handleListen();
     if (note && !isListening) {
       console.log("im here now");
@@ -37,31 +71,38 @@ function App() {
           console.log("setting the message");
           updatedRequest.messages.push({ role: "user", content: note });
         } else {
-          updatedRequest.messages.push(
-            gptResponse,
-            { role: "user", content: note }
-          );
+          updatedRequest.messages.push(gptResponse, {
+            role: "user",
+            content: note,
+          });
         }
         return updatedRequest;
       });
-      setNote(null)
+      setNote(null);
     }
   }, [isListening]);
 
   useEffect(() => {
     if (request.messages.length > 0) {
       const apiInteraction = async () => {
-        console.log('sending to ai');
+        console.log("sending to ai");
         console.log(request);
         const aiResponse = await sendRequest(request);
-        console.log('now im here');
+        console.log("now im here");
         setGptResponse(aiResponse);
         console.log(aiResponse);
+        textToSpeech(aiResponse.content);
       };
       apiInteraction();
     }
   }, [request]);
-  
+
+  useEffect(() => {
+    if (voices.length > 0 && gptResponse && gptResponse.content && !spokenRef) {
+      textToSpeech(gptResponse.content);
+      spokenRef.current = true
+    }
+  }, [voices, gptResponse]);
 
   const handleListen = () => {
     if (isListening) {
