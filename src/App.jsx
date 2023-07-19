@@ -18,7 +18,7 @@ function App() {
     model: "gpt-3.5-turbo",
     messages: [],
     temperature: 1,
-    max_tokens: 256,
+    max_tokens: 2048,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
@@ -35,26 +35,33 @@ function App() {
         };
         if (!gptResponse) {
           console.log("setting the message");
-          updatedRequest.messages.push({ role: "user", content: { note } });
+          updatedRequest.messages.push({ role: "user", content: note });
         } else {
           updatedRequest.messages.push(
-            { gptResponse },
-            { role: "user", content: { note } }
+            gptResponse,
+            { role: "user", content: note }
           );
         }
         return updatedRequest;
       });
+      setNote(null)
+    }
+  }, [isListening]);
+
+  useEffect(() => {
+    if (request.messages.length > 0) {
       const apiInteraction = async () => {
-        console.log("sending to ai");
+        console.log('sending to ai');
         console.log(request);
         const aiResponse = await sendRequest(request);
-        console.log("now im here");
+        console.log('now im here');
         setGptResponse(aiResponse);
         console.log(aiResponse);
       };
       apiInteraction();
     }
-  }, [isListening]);
+  }, [request]);
+  
 
   const handleListen = () => {
     if (isListening) {
@@ -91,8 +98,9 @@ function App() {
         </h1>
       </header>
       <Button isListening={isListening} setIsListening={setIsListening} />
-      <div className="text-slate-50 text-sm sm:text-base opacity-50 fixed top-2/3 lg:top-2/3 w-80 sm:w-2/3 h-40 text-elipsis m-h-3 overflow-hidden">
-        <p className="h-full pr-1 pb-1">{note}</p>
+      <div className="text-slate-50 text-xs sm:text-base opacity-50 fixed top-2/3 lg:top-2/3 w-80 sm:w-2/3 h-40 text-elipsis m-h-3 ">
+        <p className="h-1/2 pr-1 pb-1 overflow-auto">{note}</p>
+        <p className="h-1/2 pr-1 pb-1 overflow-auto">{gptResponse?.content}</p>
       </div>
     </main>
   );

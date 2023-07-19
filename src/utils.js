@@ -9,7 +9,7 @@ const sendRequest = async (query) => {
     try{
     const data = await api.post('/api/content/', query)
     console.log(data)
-    return data
+    return data.data.response
     } catch(error){
         console.log(error);
         return error
