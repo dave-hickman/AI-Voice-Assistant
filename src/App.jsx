@@ -29,6 +29,7 @@ function App() {
   const [speechRequest, setSpeechRequest] = useState({});
   const [audioUrl, setAudioURL] = useState('')
   const [decodedData, setDecodedData] = useState(null)
+  const [isThinking, setIsThinking] = useState(false)
 
   const spokenRef = useRef(false);
 
@@ -59,6 +60,7 @@ function App() {
   useEffect(() => {
     if (request.messages.length > 0) {
       const apiInteraction = async () => {
+        setIsThinking(true)
         console.log("sending to ai");
         console.log(request);
         const aiResponse = await sendRequest(request);
@@ -68,6 +70,7 @@ function App() {
         setSpeechRequest(
           (prevRequest) => (prevRequest.input = { text: aiResponse.content })
         );
+        
       };
       apiInteraction();
     }
@@ -89,6 +92,7 @@ function App() {
         const base64Data = speechResponse.data.response
         console.log('base data atob:', atob(base64Data))
         setDecodedData(atob(base64Data))
+        setIsThinking(false)
       }
     };
     speechInteraction();
@@ -136,7 +140,7 @@ function App() {
           AI VOICE ASSISTANT
         </h1>
       </header>
-      <Button isListening={isListening} setIsListening={setIsListening} />
+      <Button isListening={isListening} setIsListening={setIsListening} isThinking={isThinking}/>
       <div className="text-slate-50 text-xs sm:text-base opacity-50 fixed top-2/3 lg:top-2/3 w-80 sm:w-2/3 h-40 text-elipsis m-h-3 ">
         <p className="h-1/2 pr-1 pb-1 overflow-auto">{note}</p>
         <p className="h-1/2 pr-1 pb-1 overflow-auto">{gptResponse?.content}</p>

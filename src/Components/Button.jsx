@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Button = ({ isListening, setIsListening }) => {
+const Button = ({ isListening, setIsListening, isThinking }) => {
     const [disabled, setDisabled] = useState(false)
   
   const handleClick = () => {
@@ -27,6 +27,18 @@ const Button = ({ isListening, setIsListening }) => {
       </button>
     </span>
   );
+  }
+  else if(isThinking){
+    return (
+      <span className="relative flex h-60 w-60 top-40">
+        <button
+          className="rounded-full bg-teal-100 w-60 h-60 text-slate-700 text-xl z-10 font-RocGrotesk font-medium"
+          disabled={true}
+        >
+          <p className=" text-3xl font-bold">Thinking...</p>
+        </button>
+      </span>
+    );
   }
 
   else{
