@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./App.css";
 import Button from "./Components/Button";
-import getAssistant from "./utils";
-import sendRequest from "./utils";
+import { sendRequest, sendText } from "./utils";
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -16,8 +15,8 @@ function App() {
   const [isListening, setIsListening] = useState(false);
   const [note, setNote] = useState(null);
   const [gptResponse, setGptResponse] = useState(null);
-  const [voices, setVoices] = useState([])
-  const [isSpeaking, setIsSpeaking] = useState([])
+  const [voices, setVoices] = useState([]);
+  const [isSpeaking, setIsSpeaking] = useState([]);
   const [request, setRequest] = useState({
     model: "gpt-3.5-turbo",
     messages: [],
@@ -27,38 +26,13 @@ function App() {
     frequency_penalty: 0,
     presence_penalty: 0,
   });
+  const [speechRequest, setSpeechRequest] = useState({});
+  const [audioUrl, setAudioURL] = useState('')
+  const [decodedData, setDecodedData] = useState(null)
 
-  const spokenRef = useRef(false)
-
-  const textToSpeech = (text) => {
-    console.log('in the text to speech place')
-    const utterance = new SpeechSynthesisUtterance(text);
-    const desiredVoiceName = "Google US English";
-    const desiredVoice = voices.find(
-      (voice) => voice.name === desiredVoiceName
-    );
-
-    if (desiredVoice) {
-      console.log('in here now')
-      utterance.voice = desiredVoice;
-      setIsSpeaking(true);
-      utterance.onend = () => {
-        setIsSpeaking(false)
-      }
-      window.speechSynthesis.speak(utterance);
-    } else {
-      console.error("Desired voice not found:", desiredVoiceName);
-      return;
-    }
-  };
+  const spokenRef = useRef(false);
 
   useEffect(() => {
-    setVoices(synth.getVoices())
-  }, [])
-
-
-  useEffect(() => {
-    
     handleListen();
     if (note && !isListening) {
       console.log("im here now");
@@ -91,18 +65,42 @@ function App() {
         console.log("now im here");
         setGptResponse(aiResponse);
         console.log(aiResponse);
-        textToSpeech(aiResponse.content);
+        setSpeechRequest(
+          (prevRequest) => (prevRequest.input = { text: aiResponse.content })
+        );
       };
       apiInteraction();
     }
   }, [request]);
 
   useEffect(() => {
-    if (voices.length > 0 && gptResponse && gptResponse.content && !spokenRef) {
-      textToSpeech(gptResponse.content);
-      spokenRef.current = true
+    const speechInteraction = async () => {
+      if (gptResponse) {
+        console.log(gptResponse)
+        console.log("in speech api function");
+        const speechResponse = await sendText({
+          input: { text: gptResponse.content },
+          voice: { languageCode: "en-GB", name:'en-GB-Neural2-C',
+      ssmlGender:'FEMALE' },
+          audioConfig: { audioEncoding: "MP3" },
+        });
+        console.log("now weve got google data back");
+        console.log(speechResponse)
+        const base64Data = speechResponse.data.response
+        console.log('base data atob:', atob(base64Data))
+        setDecodedData(atob(base64Data))
+      }
+    };
+    speechInteraction();
+  }, [gptResponse]);
+
+  useEffect(() => {
+    if (decodedData){
+      const audioData = 'data:audio/mp3;base64,' + btoa(decodedData)
+        const audio = new Audio(audioData)
+        audio.play()
     }
-  }, [voices, gptResponse]);
+  },[decodedData])
 
   const handleListen = () => {
     if (isListening) {

@@ -16,4 +16,15 @@ const sendRequest = async (query) => {
     }
 }
 
-export default sendRequest
+const sendText = async (query) => {
+    try {
+        const data = await api.post('/api/speech/', query)
+        return data
+    }
+    catch(error){
+        console.log(error);
+        return error
+    }
+}
+
+export {sendRequest, sendText}

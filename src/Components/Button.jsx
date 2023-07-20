@@ -37,7 +37,7 @@ const Button = ({ isListening, setIsListening }) => {
             onClick={handleClick}
             disabled={disabled}
           >
-            Start
+            <p className=" text-3xl font-bold">Start</p><p className="text-xs">Click and begin<br></br>talking</p>
           </button>
         </span>
       );
