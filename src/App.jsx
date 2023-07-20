@@ -30,6 +30,8 @@ function App() {
   const [audioUrl, setAudioURL] = useState('')
   const [decodedData, setDecodedData] = useState(null)
   const [isThinking, setIsThinking] = useState(false)
+  const [audio, setAudio] = useState(null)
+  const [audioReady, setAudioReady] = useState(false)
 
   const spokenRef = useRef(false);
 
@@ -102,7 +104,8 @@ function App() {
     if (decodedData){
       const audioData = 'data:audio/mp3;base64,' + btoa(decodedData)
         const audio = new Audio(audioData)
-        audio.play()
+        setAudio(audio)
+        setAudioReady(true)
     }
   },[decodedData])
 
@@ -140,10 +143,10 @@ function App() {
           AI VOICE ASSISTANT
         </h1>
       </header>
-      <Button isListening={isListening} setIsListening={setIsListening} isThinking={isThinking}/>
-      <div className="text-slate-50 text-xs sm:text-base opacity-50 fixed top-2/3 lg:top-2/3 w-80 sm:w-2/3 h-40 text-elipsis m-h-3 ">
+      <Button isListening={isListening} setIsListening={setIsListening} isThinking={isThinking} setDecodedData={setDecodedData} audioReady={audioReady} setAudioReady={setAudioReady} audio={audio}/>
+      <div className="text-slate-50 text-base sm:text-base opacity-50 fixed top-3/4 lg:top-3/4 w-80 sm:w-2/3 h-40 text-elipsis m-h-3 ">
         <p className="h-1/2 pr-1 pb-1 overflow-auto">{note}</p>
-        <p className="h-1/2 pr-1 pb-1 overflow-auto">{gptResponse?.content}</p>
+        {/* <p className="h-1/2 pr-1 pb-1 overflow-auto">{gptResponse?.content}</p> */}
       </div>
     </main>
   );
